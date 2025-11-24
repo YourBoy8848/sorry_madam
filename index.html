@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>I'm Sorry — Curtain Reveal</title>
+    <style>
+                        :root {
+                          --bg: #f8c6c6;
+                          --card: #fff;
+                          --muted: #7a6f6f;
+                          --accent: #ff6b81;
+                          --curtain: #f06d87;
+                          --curtain-dark: #e8355b;
+                          --max-width: 900px;
+                          font-family: "Poppins", sans-serif;
+                        }
+
+                        html,
+                        body {
+                          margin: 0;
+                          height: 100%;
+                          background: var(--bg);
+                          color: #222;
+                          overflow-x: hidden;
+                        }
+
+                        /* ---------------- LOGIN SCREEN ADDED ---------------- */
+                        #loginScreen {
+                          position: fixed;
+                          inset: 0;
+                          background: #f7d3d8;
+                          display: flex;
+                          justify-content: center;
+                          align-items: center;
+                          z-index: 999999;
+                          font-family: "Poppins", sans-serif;
+                        }
+                        #loginBox {
+                          background: white;
+                          padding: 24px;
+                          width: 90%;
+                          max-width: 350px;
+                          border-radius: 14px;
+                          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                          text-align: center;
+                        }
+                        @keyframes shake {
+                          0% {
+                            transform: translateX(0);
+                          }
+                          25% {
+                            transform: translateX(-6px);
+                          }
+                          50% {
+                            transform: translateX(6px);
+                          }
+                          75% {
+                            transform: translateX(-6px);
+                          }
+                          100% {
+                            transform: translateX(0);
+                          }
+                        }
+                        /* ------------------------------------------------------ */
+
+                        .wrap {
+                          min-height: 100vh;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          padding: 24px;
+                        }
+
+                        .stage {
+                          width: 100%;
+                          max-width: var(--max-width);
+                          position: relative;
+                          border-radius: 18px;
+                          overflow: hidden;
+                          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+                          background: #f6c9c9;
+                        }
+
+                        /* ENTRY CURTAINS */
+                        .curtain-wrap {
+                          position: absolute;
+                          inset: 0;
+                          z-index: 50;
+                          display: flex;
+                        }
+                        .curtain {
+                          flex: 1;
+                          background: linear-gradient(90deg, var(--curtain), var(--curtain-dark));
+                          transition: transform 0.8s ease;
+                        }
+                        .curtain.left {
+                          transform: translateX(0);
+                        }
+                        .curtain.right {
+                          transform: translateX(0);
+                        }
+
+                       .curtain-text {
+        position: absolute;
+        top: 50px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #fff;
+        text-align: center;
+        z-index: 60;
+        width: 90%;
+        max-width: 400px;
+        padding: 10px;
+      }
+                        .curtain-text h2 {
+                          margin: 0;
+                          font-size: 26px;
+                          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                        }
+                        .curtain-text p {
+                          margin: 8px 0 0;
+                          font-size: 15px;
+                          color: #ffe6ea;
+                          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+                        }
+
+                        .curtain-open .curtain.left {
+                          transform: translateX(-100%);
+                        }
+                        .curtain-open .curtain.right {
+                          transform: translateX(100%);
+                        }
+                        .curtain-open .curtain-text {
+                          opacity: 0;
+                          transition: opacity 0.4s ease;
+                        }
+
+                        /* CONTENT */
+                        .content {
+                          padding: 20px;
+                          opacity: 0;
+                          transform: translateY(20px);
+                          transition: opacity 0.6s ease, transform 0.6s ease;
+                        }
+                        .revealed .content {
+                          opacity: 1;
+                          transform: none;
+                        }
+
+                        header h1 {
+                          margin: 0;
+                          font-size: 30px;
+                        }
+                        header p {
+                          margin: 6px 0 0;
+                          color: var(--muted);
+                        }
+
+                        .cards {
+                          margin-top: 20px;
+                          display: grid;
+                          gap: 16px;
+                          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                        }
+
+                        .card {
+                          background: #fff;
+                          border-radius: 12px;
+                          padding: 12px;
+                          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+                          text-align: center;
+                        }
+                        .card img {
+                          width: 100%;
+                          height: auto;
+                          border-radius: 10px;
+                        }
+                        .card small {
+                          color: var(--muted);
+                          display: block;
+                          margin-top: 8px;
+                        }
+
+                        /* MEMORY & FINAL SECTIONS */
+                        .memory,
+                        .final {
+                          margin-top: 30px;
+                          padding: 20px;
+                          border-radius: 12px;
+                          background: linear-gradient(180deg, #fff, #fff5f8);
+                          text-align: center;
+                        }
+                        .memory img,
+                        .final img {
+                          max-width: 100%;
+                          height: auto;
+                          border-radius: 10px;
+                        }
+
+                        /* RISKY CURTAIN */
+                        .risky-wrap {
+                          position: relative;
+                          display: inline-block;
+                          border-radius: 12px;
+                          overflow: hidden;
+                          margin-top: 12px;
+                          width: 100%;
+                          max-width: 500px;
+                          aspect-ratio: 5/4;
+                          background: #000;
+                        }
+                        .risky-image {
+                          width: 100%;
+                          height: 100%;
+                          object-fit: cover;
+                          border-radius: 12px;
+                          display: block;
+                          opacity: 0;
+                          transition: opacity 0.5s ease;
+                        }
+                        .risky-curtain {
+                          position: absolute;
+                          inset: 0;
+                          z-index: 50;
+                          display: flex;
+                        }
+                        .risky-curtain .curtain {
+                          flex: 1;
+                          background: linear-gradient(90deg, #800000, #a00000);
+                          transition: transform 1.2s ease-in-out;
+                        }
+                        .risky-curtain .left {
+                          transform: translateX(0);
+                        }
+                        .risky-curtain .right {
+                          transform: translateX(0);
+                        }
+                        .risky-curtain .risky-text {
+                          position: absolute;
+                          left: 50%;
+                          top: 45%;
+                          transform: translate(-50%, -50%);
+                          color: #fff;
+                          z-index: 45;
+                          font-weight: 600;
+                          text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+                          font-size: 18px;
+                          transition: opacity 0.6s ease;
+                        }
+                        .risky-curtain.open .left {
+                          transform: translateX(-110%);
+                        }
+                        .risky-curtain.open .right {
+                          transform: translateX(110%);
+                        }
+                        .risky-curtain.open .risky-text {
+                          opacity: 0;
+                          pointer-events: none;
+                        }
+                        .risky-curtain.open + .risky-image {
+                          opacity: 1;
+                        }
+
+                        /* Open Button */
+                        .open-btn {
+                          margin-top: 16px;
+                          padding: 12px 24px;
+                          background: #a00000;
+                          color: white;
+                          border: none;
+                          border-radius: 8px;
+                          font-size: 16px;
+                          font-weight: 600;
+                          cursor: pointer;
+                          transition: background 0.3s ease;
+                          box-shadow: 0 4px 12px rgba(160, 0, 0, 0.3);
+                          position: relative;
+                          z-index: 60;
+                        }
+                        .open-btn:hover {
+                          background: #c00000;
+                        }
+                        .open-btn:active {
+                          transform: translateY(2px);
+                        }
+
+                        /* ENVELOPE */
+                        .envelope {
+                          margin-top: 26px;
+                          width: 100%;
+                          max-width: 760px;
+                          background: linear-gradient(180deg, #fff, #fff7fb);
+                          border-radius: 14px;
+                          padding: 18px;
+                          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+                          display: flex;
+                          gap: 12px;
+                          align-items: center;
+                        }
+                        .env-text {
+                          color: #6b2b3a;
+                          font-weight: 600;
+                        }
+                        .env-sub {
+                          color: #8a6f73;
+                          font-size: 14px;
+                          margin-top: 6px;
+                        }
+
+                        .future-notes {
+                          display: grid;
+                          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                          gap: 16px;
+                          margin-top: 20px;
+                        }
+                        .note {
+                          background: #fff;
+                          border-radius: 10px;
+                          padding: 16px;
+                          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                          text-align: left;
+                        }
+                        .note h4 {
+                          margin: 0 0 8px 0;
+                          color: #d94a6f;
+                        }
+                        .note p {
+                          margin: 0;
+                          font-size: 14px;
+                          color: #7a6f6f;
+                        }
+
+                      @media (max-width: 600px) {
+                    .curtain-text {
+              position: absolute;
+              top: 15%; /* Position much higher - near the top */
+              left: 50%;
+              transform: translateX(-50%); /* Remove vertical centering */
+              color: #fff;
+              text-align: center;
+              z-index: 60;
+              width: 90%;
+              max-width: 300px;
+              padding: 20px 0; /* Add some padding */
+            }
+
+                    .curtain-text h2 {
+                      font-size: 1.3rem;
+                      margin-bottom: 8px;
+                      line-height: 1.2;
+                    }
+
+                    .curtain-text p {
+                      font-size: 0.9rem;
+                      line-height: 1.3;
+                    }
+                  }
+
+                  /* Extra small devices */
+                  @media (max-width: 400px) {
+                    .curtain-text {
+                      top: 8%; /* Even higher for very small screens */
+                    }
+                    .curtain-text h2 {
+                      font-size: 20px;
+                    }
+                    .curtain-text p {
+                      font-size: 14px;
+                    }
+                  }
+
+                  /* Ensure body doesn't scroll */
+                  body.curtain-open {
+                    overflow: hidden;
+                    height: 100vh;
+                  }
+
+                          img {
+                            max-height: 260px;
+                            object-fit: cover;
+                          }
+                          .card img {
+                            max-height: 180px;
+                          }
+                          .memory img {
+                            max-height: 220px;
+                          }
+                          .final img {
+                            max-height: 240px;
+                            object-fit: contain;
+                          }
+                          .risky-wrap {
+                            max-width: 330px;
+                            aspect-ratio: 4 / 3;
+                          }
+                          .risky-image {
+                            max-height: 240px;
+                          }
+
+                          .wrap {
+                            padding: 16px;
+                          }
+
+                          .stage {
+                            border-radius: 14px;
+                          }
+                        }
+
+                        /* Extra small devices */
+                        @media (max-width: 400px) {
+                          .curtain-text {
+                            top: 22%; /* Even higher for very small screens */
+                          }
+                          .curtain-text h2 {
+                            font-size: 20px;
+                          }
+                        }
+    </style>
+  </head>
+  <body>
+    <!-- ---------------- LOGIN SCREEN ADDED ---------------- -->
+    <div id="loginScreen">
+      <div id="loginBox">
+        <h2 style="margin: 0 0 12px; color: #d94a6f">Login Required</h2>
+        <p style="color: #000000; margin-bottom: 16px">
+          chill, madam its just for our privacy
+        </p>
+
+        <input
+          id="password"
+          type="password"
+          placeholder="Password"
+          style="
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 16px;
+          "
+        />
+
+        <button
+          id="loginBtn"
+          style="
+            width: 100%;
+            background: #d94a6f;
+            border: none;
+            padding: 12px;
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+          "
+        >
+          Enter
+        </button>
+
+        <p id="loginError" style="color: red; display: none; margin-top: 10px">
+          Incorrect password.
+        </p>
+      </div>
+    </div>
+    <!-- ---------------------------------------------------- -->
+
+    <div class="wrap">
+      <main class="stage" id="stage">
+        <!-- ENTRY CURTAINS -->
+        <div class="curtain-wrap" id="curtains">
+          <div class="curtain left"></div>
+          <div class="curtain right"></div>
+          <div class="curtain-text" id="tapText">
+            <h2>Tap to remove the curtains</h2>
+            <p>I'm sorry… please open my apology.</p>
+          </div>
+        </div>
+
+        <center>
+          <h1 style="color: #f36a6a">I'm Sorry… Truly.</h1>
+        </center>
+
+        <!-- GEMINI US -->
+        <section
+          class="gemini-us"
+          style="text-align: center; position: relative; margin-bottom: 30px"
+        >
+          <div
+            style="position: relative; display: inline-block; max-width: 90vw"
+          >
+            <img
+              src="rohan1.png"
+              alt="Gemini edited photo of us"
+              style="
+                width: 100%;
+                height: auto;
+                border-radius: 14px;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+              "
+            />
+            <div
+              style="
+                position: absolute;
+                top: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 28px;
+                height: 28px;
+                background: #c03955;
+                border-radius: 50%;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+              "
+            ></div>
+          </div>
+          <p
+            style="
+              margin-top: 12px;
+              font-size: 16px;
+              color: #000000;
+              line-height: 1.4;
+            "
+          >
+            I know I teased you too much, but every little smile you gave me
+            mattered more than words can say. Today I just want to say…
+            <strong>I'm truly sorry for hurting your heart.</strong> Please let
+            me make it up to you. ❤️
+          </p>
+        </section>
+
+        <section class="content" id="content" aria-hidden="true">
+          <header>
+            <p style="color: #000000">
+              Thank you for opening this. Read when you feel ready.
+            </p>
+          </header>
+
+          <div class="cards">
+            <article
+              class="card"
+              style="
+                position: relative;
+                transform: rotate(-3deg);
+                background: #fff0f4;
+              "
+            >
+              <div
+                style="
+                  position: absolute;
+                  top: -10px;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  width: 24px;
+                  height: 24px;
+                  background: #c03955;
+                  border-radius: 50%;
+                  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+                "
+              ></div>
+              <img src="rohan3.jpg" alt="Her photo 1" />
+              <small>You deserve patience and understanding.</small>
+            </article>
+            <article
+              class="card"
+              style="
+                position: relative;
+                transform: rotate(1.8deg);
+                background: #fff0f4;
+              "
+            >
+              <div
+                style="
+                  position: absolute;
+                  top: -10px;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  width: 24px;
+                  height: 24px;
+                  background: #c03955;
+                  border-radius: 50%;
+                  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+                "
+              ></div>
+              <img src="rohan4.jpg" alt="Her photo 2" />
+              <small>Thank you for every message you managed to send.</small>
+            </article>
+            <article
+              class="card"
+              style="
+                position: relative;
+                transform: rotate(-2deg);
+                background: #fff0f4;
+              "
+            >
+              <div
+                style="
+                  position: absolute;
+                  top: -10px;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  width: 24px;
+                  height: 24px;
+                  background: #c03955;
+                  border-radius: 50%;
+                  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+                "
+              ></div>
+              <img src="rohan7.jpg" alt="Her photo 3" />
+              <small>I'll be kinder. I promise.</small>
+            </article>
+          </div>
+
+          <div
+            class="memory"
+            style="
+              background: #fff4f7;
+              position: relative;
+              transform: rotate(-1deg);
+              padding-top: 40px;
+            "
+          >
+            <div
+              style="
+                position: absolute;
+                top: -12px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 26px;
+                height: 26px;
+                background: #c03955;
+                border-radius: 50%;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+              "
+            ></div>
+            <h3 style="color: #d94a6f">We've come a long way…</h3>
+            <img src="childhood.jpg" alt="Childhood" />
+            <p style="color: #000000">
+              I never want to hurt the same person who grew up beside me. I'm
+              learning.
+            </p>
+          </div>
+
+          <div class="final" style="background: #ffe6ec">
+            <h3 style="color: #d94a6f">Our Future Together, Just a hope 😉</h3>
+            <p>Want to see our future selves as cute oldies?</p>
+            <img src="old.jpg" alt="Old us" />
+
+            <div class="future-notes">
+              <div class="note">
+                <h4>Growing Old Together</h4>
+                <p>
+                  I imagine us sitting on a porch swing, holding hands, and
+                  reminiscing about all our beautiful memories.
+                </p>
+              </div>
+              <div class="note">
+                <h4>Travel Adventures</h4>
+                <p>
+                  I want to explore the world with you - from Paris to Tokyo,
+                  creating stories we'll tell our grandchildren.
+                </p>
+              </div>
+              <div class="note">
+                <h4>Building a Home</h4>
+                <p>
+                  A place filled with laughter, love, and the little traditions
+                  that make our relationship special.
+                </p>
+              </div>
+              <div class="note">
+                <h4>Supporting Each Other</h4>
+                <p>
+                  Through all of life's ups and downs, I want to be your
+                  constant support and biggest cheerleader.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="final"
+              style="
+                background: #ffe6ec;
+                padding: 20px;
+                border-radius: 12px;
+                margin-top: 18px;
+              "
+            >
+              <h3 style="color: #d94a6f">Something special and risky.</h3>
+              <p>Click the button below to reveal 👀</p>
+
+              <div class="risky-wrap">
+                <div class="risky-curtain" id="riskyCurtain">
+                  <div class="curtain left"></div>
+                  <div class="curtain right"></div>
+                  <div class="risky-text">Open</div>
+                </div>
+                <img class="risky-image" src="kissing.png" alt="Risky" />
+              </div>
+              <button class="open-btn" id="openRiskyBtn">Open Curtains</button>
+            </div>
+          </div>
+
+          <div class="envelope">
+            <div>
+              <div class="env-text">All these AI photos can be a reality…</div>
+              <div class="env-sub">
+                If you just wish and cooperate, madam. ❤️
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <audio id="bgm" src="bhawana.mp3" preload="auto"></audio>
+
+    <!-- ENTRY CURTAIN SCRIPT -->
+    <script>
+      (function () {
+        const stage = document.getElementById("stage");
+        const curtains = document.getElementById("curtains");
+        let opened = false;
+        function openCurtains() {
+          if (opened) return;
+          opened = true;
+          stage.classList.add("curtain-open");
+          curtains.classList.add("curtain-open");
+          const bgm = document.getElementById("bgm");
+          if (bgm)
+            try {
+              bgm.play();
+            } catch (e) {}
+          setTimeout(() => stage.classList.add("revealed"), 600);
+        }
+        curtains.addEventListener("click", openCurtains);
+        curtains.addEventListener("touchstart", openCurtains);
+      })();
+    </script>
+
+    <!-- RISKY CURTAIN SCRIPT -->
+    <script>
+      (function () {
+        const risky = document.getElementById("riskyCurtain");
+        const openBtn = document.getElementById("openRiskyBtn");
+        if (!risky || !openBtn) return;
+
+        function openRiskyCurtain() {
+          if (risky.classList.contains("open")) return;
+          risky.classList.add("open");
+          setTimeout(() => {
+            risky.style.pointerEvents = "none";
+            openBtn.style.display = "none";
+          }, 1200);
+        }
+        openBtn.addEventListener("click", openRiskyCurtain);
+        openBtn.addEventListener(
+          "touchstart",
+          (e) => {
+            e.preventDefault();
+            openRiskyCurtain();
+          },
+          { passive: false }
+        );
+      })();
+    </script>
+
+    <!-- ---------------- LOGIN SCRIPT ADDED ---------------- -->
+    <script>
+      (function () {
+        const loginScreen = document.getElementById("loginScreen");
+        const loginBtn = document.getElementById("loginBtn");
+        const box = document.getElementById("loginBox");
+
+        const PASS = "rnlvagity"; // change this
+
+        loginBtn.addEventListener("click", function () {
+          const p = document.getElementById("password").value.trim();
+          const err = document.getElementById("loginError");
+
+          if (p === PASS) {
+            err.style.display = "none";
+            loginScreen.style.transition = "opacity 0.6s ease";
+            loginScreen.style.opacity = "0";
+            setTimeout(() => (loginScreen.style.display = "none"), 600);
+          } else {
+            err.style.display = "block";
+            box.style.animation = "shake 0.3s";
+            setTimeout(() => (box.style.animation = ""), 300);
+          }
+        });
+      })();
+    </script>
+    <!-- ----------------------------------------------------- -->
+  </body>
+</html>
